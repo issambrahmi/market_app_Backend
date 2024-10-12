@@ -1,22 +1,20 @@
 import { Request , Response } from 'express';
-import { addCategorieToDB, deleteCategorieFromDB, getCategoriesFromDB, updateCategorieOnDB } from '../Model/categorie_model';
 import { error } from 'console';
 import { addProductToDB, deleteProductFromDB, getProductsFromDB, Product, searchForProductFromDB, updateProductOnDB } from '../Model/product_model';
-import { searchForUsersFromDB } from '../Model/user_model';
 
 export const addProduct = async(req: Request , res: Response): Promise<Response> => {
- const {name , categorieId , priceD , priceG , priceSG , minQntG , minQntSG } = req.body;
+ const { productData } = req.body;
     try {
         const product: Product = {
             id: '',
-            name: name,
-            categorieId: categorieId,
+            name: productData.name,
+            categorieId: productData.categorieId,
             image: '',
-            priceD: priceD,
-            priceG: priceG,
-            priceSG: priceSG,
-            minQntG: minQntG,
-            minQntSG: minQntSG
+            priceD: productData.priceD,
+            priceG: productData.priceG,
+            priceSG: productData.priceSG,
+            minQntG: productData.minQntG,
+            minQntSG: productData.minQntSG
         }; 
         const result = await addProductToDB( product);
         if(result === null){
@@ -27,6 +25,8 @@ export const addProduct = async(req: Request , res: Response): Promise<Response>
       return res.status(500).json({ message: 'Database error', error: error });      
     }
 }
+
+
 export const deleteProduct = async(req: Request , res: Response ): Promise<Response> => {
   const {id} = req.body;
      try {
