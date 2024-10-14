@@ -1,9 +1,9 @@
 import { db } from "../db config/db";
 
 export interface Product {
-    id: string , 
+    id: number , 
     name: string , 
-    categorieId: string ,
+    categorieId: number ,
     image: string ,
     priceD : number ,
     priceG : number,
@@ -15,7 +15,7 @@ export interface Product {
 export const addProductToDB  = async (
     product : Product): Promise<Product | null> => {
     try {
-      const query = `INSERT INTO product (name , categorie , priceD , priceG , priceSG , minQntG , minQntSG) VALUES (?,?,?,?,?,?,?)`;
+      const query = `INSERT INTO products (name , categorie , priceD , priceG , priceSG , minQntG , minQntSG) VALUES (?,?,?,?,?,?,?)`;
       const [rows]: any = await db.execute(query , [product.name , product.categorieId , product.priceD ,
          product.priceG , product.priceSG , product.minQntG , product.minQntSG]);
       return rows as Product ;
@@ -28,7 +28,7 @@ export const addProductToDB  = async (
   
   export const deleteProductFromDB  = async (id : string): Promise<boolean> => {
     try {
-      const query = `DELETE FROM product WHERE id = ?`;
+      const query = `DELETE FROM products WHERE id = ?`;
       await db.execute(query , [id]);
       return true ;
   
@@ -41,8 +41,8 @@ export const addProductToDB  = async (
   export const updateProductOnDB = async (
     product : Product): Promise<Product | null> => {
     try {
-      const query = `UPDATE product SET name = ? , categorieId = ? , priceD = ? , priceG = ? , priceSG = ? , minQntG = ?,
-      minQntSG = ? WHERE id = ?`;
+      const query = `UPDATE products SET name = ? , categorie_id = ? , price_d = ? , price_g = ? , price_sg = ? , min_qnt_g = ?,
+      min_qnt_sg = ? WHERE id = ?`;
       const [rows]: any = await db.execute(query , [product.name , product.categorieId , product.priceD ,
         product.priceG , product.priceSG , product.minQntG , product.minQntSG]);
       return rows as Product ;
@@ -55,7 +55,7 @@ export const addProductToDB  = async (
   
   export const getProductsFromDB  = async (offSet : string): Promise<[Product] | null> => {
       try {
-        const query = `SELECT * FROM product LIMIT 16 OFFSET ${offSet}`;
+        const query = `SELECT * FROM products LIMIT 16 OFFSET ${offSet}`;
         const [rows]: any = await db.execute(query);
         return rows;
   
@@ -67,7 +67,7 @@ export const addProductToDB  = async (
 
     export const searchForProductFromDB  = async (name : string): Promise<[Product] | null> => {
       try {
-        const query = `SELECT * FROM product LIMIT 16 WHERE name LIKE %?%`;
+        const query = `SELECT * FROM products LIMIT 16 WHERE name LIKE %?%`;
         const [rows]: any = await db.execute(query , [name]);
         return rows;
   

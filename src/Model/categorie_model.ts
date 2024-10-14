@@ -7,7 +7,7 @@ export  interface Categorie {
 
 export const addCategorieToDB  = async (name: string): Promise<Categorie | null> => {
   try {
-    const query = `INSERT INTO categorie (name) VALUES (?)`;
+    const query = `INSERT INTO categories (name) VALUES (?)`;
     const [rows]: any = await db.execute(query , [name]);
     return { 'id' : rows.insertId , 'name' : name } as Categorie ;
 
@@ -19,7 +19,7 @@ export const addCategorieToDB  = async (name: string): Promise<Categorie | null>
 
 export const deleteCategorieFromDB  = async (id : string): Promise<boolean> => {
   try {
-    const query = `DELETE FROM categorie WHERE id = ?`;
+    const query = `DELETE FROM categories WHERE id = ?`;
     const [rows]: any = await db.execute(query , [id]);
     return true ;
 
@@ -31,7 +31,7 @@ export const deleteCategorieFromDB  = async (id : string): Promise<boolean> => {
 
 export const updateCategorieOnDB = async (id: string , name : string): Promise<Categorie | null> => {
   try {
-    const query = `UPDATE categorie SET name = ? WHERE id = ?`;
+    const query = `UPDATE categories SET name = ? WHERE id = ?`;
     const [rows]: any = await db.execute(query , [name,id]);
     return rows as Categorie ;
 
@@ -43,7 +43,7 @@ export const updateCategorieOnDB = async (id: string , name : string): Promise<C
 
 export const getCategoriesFromDB  = async (offSet : string): Promise<[Categorie] | null> => {
     try {
-      const query = `SELECT * FROM categorie LIMIT 16 OFFSET ${offSet}`;
+      const query = `SELECT * FROM categories LIMIT 16 OFFSET ${offSet}`;
       const [rows]: any = await db.execute(query);
       return rows;
 
@@ -55,7 +55,7 @@ export const getCategoriesFromDB  = async (offSet : string): Promise<[Categorie]
 
   export const searchForCategorieFromDB  = async (name : string): Promise<[Categorie] | null> => {
     try {
-      const query = `SELECT * FROM categorie LIMIT 16 WHERE name LIKE %?%`;
+      const query = `SELECT * FROM categories LIMIT 16 WHERE name LIKE %?%`;
       const [rows]: any = await db.execute(query , [name]);
       return rows;
 

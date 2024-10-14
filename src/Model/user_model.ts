@@ -5,6 +5,7 @@ export interface User{
  username : string,
  email : string,
  password : string,
+ phoneNumber : string,
  image : string
 }
 
@@ -50,3 +51,4 @@ export const searchForUsersFromDB = async (username : string , role: string) : P
         return null;
     }
 }
+

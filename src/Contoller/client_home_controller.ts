@@ -1,5 +1,4 @@
 import { Request , Response } from 'express';
-import { getCategories } from './categories_controller';
 import { getCategoriesFromDB } from '../Model/categorie_model';
 import { getProductsFromDB } from '../Model/product_model';
 

@@ -13,14 +13,14 @@ export interface OrderItems {
   id : number ,
   orderID : number ,
   productId : number ,
-  type : 'detaille' | 'gros' | 'super gros'
+  type : 'detaille' | 'gros' | 'super_gros'
   qnt : number ,
 }
 
 export const addOrderToDB = async (Order : Order , items : [OrderItems]): Promise<Order | null> =>{
 
      const query = `INSERT INTO orders (client_id , total_price , status ) VALUES (?,?,?)`;
-     const query2 = `INSERT INTO orderItems (order_id , product_id , qnt , type ) VALUES ?`;
+     const query2 = `INSERT INTO order items (order_id , product_id , qnt , type ) VALUES ?`;
      const itemsValues = items.map((item) => [
         item.orderID ,
         item.productId , 
@@ -43,10 +43,8 @@ export const addOrderToDB = async (Order : Order , items : [OrderItems]): Promis
 export const deleteOrderFromDB = async (OrderId : string): Promise< boolean > =>{
 
     const query = `DELETE FROM orders WHERE id = ?`;
-    const query2 = `DELETE FROM orderItems WHERE order_id = ?`
    try {
      await db.execute(query , [OrderId]);
-     await db.execute(query2 , [OrderId]);
      return true;
    } catch (error) {
        console.log('err deleting Order ' + error);
@@ -70,8 +68,8 @@ export const updateOrderStatusOnDB = async (status : string): Promise<boolean> =
 
 export const updateOrderOnDB = async ( items : [OrderItems]): Promise<boolean> =>{
 
-  const query = `UPDATE orderItems SET  total_price = ?`;
-  const query2 = `INSERT INTO orderItems ( qnt , type ) VALUES ?`;
+  const query = `UPDATE order items SET  total_price = ?`;
+  const query2 = `INSERT INTO order items ( qnt , type ) VALUES ?`;
   const itemsValues = items.map((item) => [
     item.qnt , 
     item.type ,
@@ -101,7 +99,7 @@ export const getOrdersFromDB = async (offSet : string ): Promise<[Order] | null>
 
 export const getOrderItemsFomDB = async (offSet : string , orderId : string): Promise<[OrderItems] | null> =>{
 
-    const query = `SELECT * FROM orderItems WHERE order_id = ? LIMIT 15 OFFSET ${offSet}`;
+    const query = `SELECT * FROM order items WHERE order_id = ? LIMIT 15 OFFSET ${offSet}`;
    try {
 
     const [rows]: any =  await db.execute(query , [orderId]);
