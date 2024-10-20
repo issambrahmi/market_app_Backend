@@ -15,8 +15,8 @@ export interface Product {
 export const addProductToDB  = async (
     product : Product): Promise<Product | null> => {
     try {
-      const query = `INSERT INTO products (name , categorie , priceD , priceG , priceSG , minQntG , minQntSG) VALUES (?,?,?,?,?,?,?)`;
-      const [rows]: any = await db.execute(query , [product.name , product.categorieId , product.priceD ,
+      const query = `INSERT INTO products (name , categorie , image , priceD , priceG , priceSG , minQntG , minQntSG) VALUES (?,?,?,?,?,?,?,?)`;
+      const [rows]: any = await db.execute(query , [product.name , product.categorieId , product.priceD , product.image ,
          product.priceG , product.priceSG , product.minQntG , product.minQntSG]);
       return rows as Product ;
   

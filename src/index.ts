@@ -7,7 +7,7 @@ app.use(express.json());
 
 app.use('/V1/market/admin' , admin_router);
 
-//app.use('/V12/market/admin' , admin_router);
+//app.use('/V2/market/admin' , admin_router);
 
 
 app.listen(3030 , ()=>{

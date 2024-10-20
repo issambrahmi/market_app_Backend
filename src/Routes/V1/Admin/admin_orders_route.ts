@@ -5,12 +5,12 @@ const router = Router();
 
 //////////////////////////// ORDERS ///////////////////////////////////
 
-router.delete('/order' , (req : Request , res : Response) => { deleteOrder(req , res ) });
-router.put('/orderStatus' , (req : Request , res : Response) => { updateOrderStatus(req , res ) });
-router.put('/orderItems' , (req : Request , res : Response) => { updateOrderItems(req , res ) });
-router.get('/order/:offSet' , (req : Request , res : Response) => { getOrders(req , res ) });
-router.get('/orderItems' , (req : Request , res : Response) => { getOrderItems(req , res ) });
-router.get('/orderSearch/:name' , (req : Request , res : Response) => { searchForOrders(req , res ) });
+router.delete('/' , (req : Request , res : Response) => { deleteOrder(req , res ) });
+router.put('/status' , (req : Request , res : Response) => { updateOrderStatus(req , res ) });
+router.put('/items' , (req : Request , res : Response) => { updateOrderItems(req , res ) });
+router.get('/:offSet' , (req : Request , res : Response) => { getOrders(req , res ) });
+router.get('/items' , (req : Request , res : Response) => { getOrderItems(req , res ) });
+router.get('/search/:name' , (req : Request , res : Response) => { searchForOrders(req , res ) });
 
 
 //////////////////////////// ORDERS ///////////////////////////////////

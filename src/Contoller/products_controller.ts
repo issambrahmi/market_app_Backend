@@ -6,10 +6,10 @@ export const addProduct = async(req: Request , res: Response): Promise<Response>
  const { productData } = req.body;
     try {
         const product: Product = {
-            id: '',
+            id: 0,
             name: productData.name,
             categorieId: productData.categorieId,
-            image: '',
+            image: productData.image != null ? productData.image : '',
             priceD: productData.priceD,
             priceG: productData.priceG,
             priceSG: productData.priceSG,
@@ -43,7 +43,7 @@ export const deleteProduct = async(req: Request , res: Response ): Promise<Respo
  export const updateProduct = async(req: Request , res: Response ): Promise<Response> => {
     const {name , categorieId , priceD , priceG , priceSG , minQntG , minQntSG } = req.body;
   const product: Product = {
-    id: '',
+    id: 0,
     name: name,
     categorieId: categorieId,
     image: '',
