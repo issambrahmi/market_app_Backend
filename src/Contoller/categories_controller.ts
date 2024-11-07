@@ -42,9 +42,8 @@ export const deleteCategorie = async(req: Request , res: Response ): Promise<Res
 
 
 export const getCategories = async(req: Request , res: Response): Promise<Response> => {
-    const offset: string = req.params.offSet;
        try {
-           const categorie = await getCategoriesFromDB(offset);
+           const categorie = await getCategoriesFromDB();
            if(categorie === null){
               throw error;
            }

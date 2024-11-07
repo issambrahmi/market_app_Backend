@@ -5,20 +5,20 @@ const router = Router();
 
 //////////////////////////// USERS /////////////////////////////////////
 // client 
-router.post('/client' , (req : Request , res : Response) => { addUser(req , res , 'client') });
-router.delete('/client' , (req: Request , res : Response) => { deleteUser(req , res , 'client') });
-router.put('/client' , (req: Request , res : Response) => { updateUserData(req , res , 'client') });
-router.get('/client/:offSet' , (req: Request , res : Response ) => { getUsers(req , res , 'client') });
-router.get('/clientSearch/:username' , (req: Request , res : Response ) => { searchForUsers(req , res , 'client') });
+router.post('/client' , (req : Request , res : Response) => { addUser(req , res , 'clients') });
+router.delete('/client' , (req: Request , res : Response) => { deleteUser(req , res , 'clients') });
+router.put('/client' , (req: Request , res : Response) => { updateUserData(req , res , 'clients') });
+router.get('/client/:offSet' , (req: Request , res : Response ) => { getUsers(req , res , 'clients') });
+router.get('/client/search/:username' , (req: Request , res : Response ) => { searchForUsers(req , res , 'clients') });
 
 
 
 // worker
-router.post('/worker' , (req : Request , res : Response) => { addUser(req , res , 'worker') });
-router.delete('/worker' , (req: Request , res : Response) => { deleteUser(req , res , 'worker') });
-router.put('/worker' , (req: Request , res : Response) => { updateUserData(req , res , 'worker') });
-router.get('/worker/:offSet' , (req: Request , res : Response ) => { getUsers(req , res , 'worker') });
-router.get('/workertSearch/:username' , (req: Request , res : Response ) => { searchForUsers(req , res , 'Worker') });
+router.post('/worker' , (req : Request , res : Response) => { addUser(req , res , 'workers') });
+router.delete('/worker' , (req: Request , res : Response) => { deleteUser(req , res , 'workers') });
+router.put('/worker' , (req: Request , res : Response) => { updateUserData(req , res , 'workers') });
+router.get('/worker/:offSet' , (req: Request , res : Response ) => { getUsers(req , res , 'workers') });
+router.get('/worker/search/:username' , (req: Request , res : Response ) => { searchForUsers(req , res , 'Workers') });
 
 //////////////////////////// USERS /////////////////////////////////////
 

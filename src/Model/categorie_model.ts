@@ -41,9 +41,9 @@ export const updateCategorieOnDB = async (id: string , name : string): Promise<C
   }
 }
 
-export const getCategoriesFromDB  = async (offSet : string): Promise<[Categorie] | null> => {
+export const getCategoriesFromDB  = async (): Promise<[Categorie] | null> => {
     try {
-      const query = `SELECT * FROM categories LIMIT 16 OFFSET ${offSet}`;
+      const query = `SELECT * FROM categories`;
       const [rows]: any = await db.execute(query);
       return rows;
 

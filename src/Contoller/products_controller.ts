@@ -3,20 +3,25 @@ import { error } from 'console';
 import { addProductToDB, deleteProductFromDB, getProductsFromDB, Product, searchForProductFromDB, updateProductOnDB } from '../Model/product_model';
 
 export const addProduct = async(req: Request , res: Response): Promise<Response> => {
- const { productData } = req.body;
-    try {
+ const { name , categorieId , image , priceD , priceG , priceSG , minQntG , minQntSG } = req.body;
+   
+  if( !name || !categorieId || !priceD || !priceG || !priceSG || !minQntG || !minQntSG){
+    return res.status(400).json({message : 'please fill all fileds'});
+  }
+  try {
         const product: Product = {
             id: 0,
-            name: productData.name,
-            categorieId: productData.categorieId,
-            image: productData.image != null ? productData.image : '',
-            priceD: productData.priceD,
-            priceG: productData.priceG,
-            priceSG: productData.priceSG,
-            minQntG: productData.minQntG,
-            minQntSG: productData.minQntSG
+            name: name,
+            categorieId: categorieId,
+            image: image != undefined ? image : '',
+            priceD: priceD,
+            priceG: priceG,
+            priceSG: priceSG,
+            minQntG: minQntG,
+            minQntSG: minQntSG
         }; 
-        const result = await addProductToDB( product);
+        const result = await addProductToDB(product);
+        console.log(result);
         if(result === null){
            throw error;
         }
@@ -41,9 +46,9 @@ export const deleteProduct = async(req: Request , res: Response ): Promise<Respo
  }
 
  export const updateProduct = async(req: Request , res: Response ): Promise<Response> => {
-    const {name , categorieId , priceD , priceG , priceSG , minQntG , minQntSG } = req.body;
+    const {id, name , categorieId , priceD , priceG , priceSG , minQntG , minQntSG } = req.body;
   const product: Product = {
-    id: 0,
+    id: id,
     name: name,
     categorieId: categorieId,
     image: '',

@@ -24,12 +24,13 @@ export const findUserByEmail = async (email : String , role: String) : Promise<U
     }
 }
 
-export const getUsersFromDB = async (offSet: string , role: string) : Promise<Object | null> => {
+export const getUsersFromDB = async (offSet: string , role: string) : Promise<User[] | null> => {
     try {
         const query: string = `SELECT * FROM ${role} LIMIT 16 OFFSET ${offSet}`;
         const [rows] : any = await db.execute(query);
+
         if(rows.length === 0){
-          return null;
+          return [];
         }
         return rows;
     } catch (error) {
@@ -40,11 +41,8 @@ export const getUsersFromDB = async (offSet: string , role: string) : Promise<Ob
 
 export const searchForUsersFromDB = async (username : string , role: string) : Promise<User | null> => {
     try {
-        const query: string = `SELECT * FROM ${role} LIMIT 16 WHERE username LIKE %?%`;
-        const [rows] : any = await db.execute(query , [username]);
-        if(rows.length === 0){
-          return null;
-        }
+        const query: string = `SELECT * FROM ${role} WHERE username LIKE ? LIMIT 16`;
+        const [rows] : any = await db.execute(query , [`%${username}%`]);
         return rows;
     } catch (error) {
         console.log('err getUsers' + error);
