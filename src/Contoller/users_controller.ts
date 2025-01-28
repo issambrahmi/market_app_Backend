@@ -1,7 +1,7 @@
 import { db } from '../db config/db'
 import { Request , Response } from 'express';
 import  bcrypt  from 'bcryptjs';
-import { getUsersFromDB, searchForUsersFromDB, User } from '../Model/user_model';
+import { getUsersFromDB, getUsersFromDBWithoutOffset, searchForUsersFromDB, User } from '../Model/user_model';
 import { error } from 'console';
 
 
@@ -94,6 +94,18 @@ export const addUser = async ( req : Request , res : Response , role : String): 
     const {offSet} = req.params;
      try {
       const result = await getUsersFromDB(offSet , role);
+      if(result === null){
+        throw error('getUsersError');
+      }
+      return res.status(200).json({'users' : result})
+     } catch (error) {
+      return res.status(500).json({ message: 'Database error', error: error });
+     }
+  }
+
+  export const getUsersWithoutOffset = async (req: Request , res: Response , role: string): Promise<Response> =>{
+     try {
+      const result = await getUsersFromDBWithoutOffset(role);
       if(result === null){
         throw error('getUsersError');
       }

@@ -1,6 +1,7 @@
 import { Request , Response } from 'express';
 import { error } from 'console';
-import { addOrderToDB, deleteOrderFromDB, getOrderItemsFomDB, getOrdersFromDB, Order, OrderItems, updateOrderOnDB } from '../Model/order_model';
+import { acceptOrderOnDB, addOrderToDB, deleteOrderFromDB, getOrderItemsFomDB, getOrdersFromDB, Order, OrderItems, searchOrderByIdOnDB, updateOrderOnDB } from '../Model/order_model';
+import { workerData } from 'worker_threads';
 
 export const addOrder = async(req: Request , res: Response): Promise<Response> => {
 
@@ -8,9 +9,11 @@ export const addOrder = async(req: Request , res: Response): Promise<Response> =
     const order : Order = {
         id: 0,
         clientId: orderData.client_id,
+        wordkerId : 0,
         date: '',
         totalePrice: orderData.total_price,
-        status: 'waiting'
+        status: 'waiting',
+        isAccepted : false
      };
 
      const itemsList: [OrderItems] =  items.map((item: any) =>({ 
@@ -72,6 +75,10 @@ export const addOrder = async(req: Request , res: Response): Promise<Response> =
    export const deleteOrder = async(req: Request , res: Response): Promise<Response> => {
 
     const { orderId } = req.body;
+
+     if(!orderId){
+      return res.status(400).json({ message: 'Please fill in all fields' });
+     }
        try {
            const result = await deleteOrderFromDB(orderId);
            if(!result){
@@ -85,9 +92,8 @@ export const addOrder = async(req: Request , res: Response): Promise<Response> =
 
    export const getOrders = async(req: Request , res: Response): Promise<Response> => {
 
-    const  offSet: string = req.params.offSet;
        try {
-           const result = await getOrdersFromDB(offSet);
+           const result = await getOrdersFromDB();
            if(result === null){
               throw error;
            }
@@ -96,15 +102,13 @@ export const addOrder = async(req: Request , res: Response): Promise<Response> =
          return res.status(500).json({ message: 'Database error', error: error });      
        }
    }
-
    
    export const getOrderItems = async(req: Request , res: Response): Promise<Response> => {
 
     const  orderId : string= req.params.orderId;
-    const  offSet : string= req.params.offSet;
 
        try {
-           const result = await getOrderItemsFomDB(orderId , offSet);
+           const result = await getOrderItemsFomDB(orderId);
            if(result === null){
               throw error;
            }
@@ -116,9 +120,9 @@ export const addOrder = async(req: Request , res: Response): Promise<Response> =
 
    export const searchForOrders = async(req: Request , res: Response): Promise<Response> => {
 
-    const offSet : string = req.body;
+    const id : number = req.body;
        try {
-           const result = await getOrdersFromDB(offSet);
+           const result = await searchOrderByIdOnDB(id);
            if(result === null){
               throw error;
            }
@@ -127,6 +131,22 @@ export const addOrder = async(req: Request , res: Response): Promise<Response> =
          return res.status(500).json({ message: 'Database error', error: error });      
        }
    }
+
+   export const acceptOrder = async (req:Request , res:Response) =>{
+    const {orderId , workerId} = req.body;
+    try {
+      const result = await acceptOrderOnDB(orderId , workerId);
+      if(!result){
+        throw error;
+      }
+      return res.status(200).json({message  : 'order accepted'});
+
+    } catch (error) {
+      return res.status(500).json({ message: 'Database error', error: error });      
+    }
+   }
+
+
 
 
    

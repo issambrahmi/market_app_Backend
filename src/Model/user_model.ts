@@ -39,6 +39,21 @@ export const getUsersFromDB = async (offSet: string , role: string) : Promise<Us
     }
 }
 
+export const getUsersFromDBWithoutOffset = async (role: string) : Promise<User[] | null> => {
+    try {
+        const query: string = `SELECT * FROM ${role}`;
+        const [rows] : any = await db.execute(query);
+
+        if(rows.length === 0){
+          return [];
+        }
+        return rows;
+    } catch (error) {
+        console.log('err getUsers' + error);
+        return null;
+    }
+}
+
 export const searchForUsersFromDB = async (username : string , role: string) : Promise<User | null> => {
     try {
         const query: string = `SELECT * FROM ${role} WHERE username LIKE ? LIMIT 16`;

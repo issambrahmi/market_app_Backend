@@ -1,12 +1,15 @@
+import { query } from 'express';
 import {db} from '../db config/db';
 
 
 export interface Order {
   id: number , 
   clientId : number , 
+  wordkerId : number , 
   date : string ,
   totalePrice : number ,
   status : 'waiting' | 'preparing' | 'finished' ,
+  isAccepted : boolean
 }
 
 export interface OrderItems {
@@ -17,26 +20,33 @@ export interface OrderItems {
   qnt : number ,
 }
 
-export const addOrderToDB = async (Order : Order , items : [OrderItems]): Promise<Order | null> =>{
+export const addOrderToDB = async (Order : Order , items : OrderItems[]): Promise<Order | null> =>{
 
-     const query = `INSERT INTO orders (client_id , total_price , status ) VALUES (?,?,?)`;
-     const query2 = `INSERT INTO order items (order_id , product_id , qnt , type ) VALUES ?`;
-     const itemsValues = items.map((item) => [
-        item.orderID ,
-        item.productId , 
-        item.qnt , 
-        item.type ,
-     ]); 
-
+     const query1 = `INSERT INTO orders (client_id , total_price ) VALUES (?,?)`;
+     const query2 = `INSERT INTO order_items (order_id , product_id , qnt , type ) VALUES (?,?,?,?)`;
+ 
+     const connection = await db.getConnection();
     try {
+      await connection.beginTransaction(); // start
 
-      const [row]: any = await db.execute(query , [Order.clientId , Order.totalePrice , Order.status]);
-      await db.execute(query2 , [itemsValues]);  
-      Order.id = row.insertId;
+      const [row1]: any = await db.execute(query1 , [Order.clientId , Order.totalePrice]);
+      const orderId = row1.insertId;
+
+      for(let item of items){
+        await db.execute(query2 , [orderId , item.productId , item.qnt , item.type]);
+      }
+
+      await connection.commit(); // success
+     
       return Order;
     } catch (error) {
+
+        await connection.rollback(); // delete all changes
         console.log('err adding Order ' + error);
         return null;
+        
+    } finally{
+      connection.release(); // end
     }
 }
 
@@ -75,7 +85,6 @@ export const updateOrderOnDB = async ( items : [OrderItems]): Promise<boolean> =
     item.type ,
  ]); 
  try {
-
    await db.execute(query , [itemsValues]);
    return true;
  } catch (error) {
@@ -84,11 +93,11 @@ export const updateOrderOnDB = async ( items : [OrderItems]): Promise<boolean> =
  }
 }
 
-export const getOrdersFromDB = async (offSet : string ): Promise<[Order] | null> =>{
+export const getOrdersFromDB = async (): Promise<[Order] | null> =>{
 
-    const query = `SELECT * FROM orders LIMIT 16 OFFSET ${offSet} `;
+   const query = `SELECT * FROM orders`;  
+   
    try {
-
     const [rows]: any =  await db.execute(query);
      return rows;
    } catch (error) {
@@ -97,11 +106,15 @@ export const getOrdersFromDB = async (offSet : string ): Promise<[Order] | null>
    }
 }
 
-export const getOrderItemsFomDB = async (offSet : string , orderId : string): Promise<[OrderItems] | null> =>{
+export const getOrderItemsFomDB = async (orderId : string): Promise<[OrderItems] | null> =>{
 
-    const query = `SELECT * FROM order items WHERE order_id = ? LIMIT 15 OFFSET ${offSet}`;
+    const query = `SELECT order_items.*,
+                   products.*
+                   FROM order_items
+                   INNER JOIN products
+                   ON order_items.product_id = products.id
+                   WHERE order_items.order_id = ?`;
    try {
-
     const [rows]: any =  await db.execute(query , [orderId]);
      return rows;
    } catch (error) {
@@ -122,6 +135,20 @@ export const searchOrderByIdOnDB = async (orderId : number): Promise<Order | nul
        return null;
    }
 }
+
+export const acceptOrderOnDB = async (orderId : number , workerId : number): Promise<boolean> =>{
+
+  const query = `UPDATE orders SET worker_id=? , is_accepted=1 WHERE id=?`;
+  
+ try {
+  await db.execute(query , [workerId , orderId]);
+   return true;
+ } catch (error) {
+     console.log('err accept Order' + error);
+     return false;
+ }
+}
+
 
 
 

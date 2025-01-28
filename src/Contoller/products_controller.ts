@@ -1,6 +1,7 @@
 import { Request , Response } from 'express';
 import { error } from 'console';
-import { addProductToDB, deleteProductFromDB, getProductsFromDB, Product, searchForProductFromDB, updateProductOnDB } from '../Model/product_model';
+import { addProductToDB, deleteProductFromDB, getProductsFromDB, Product, searchForProductFromDB, searchForProductNamesFromDB, updateProductOnDB } from '../Model/product_model';
+import { off } from 'process';
 
 export const addProduct = async(req: Request , res: Response): Promise<Response> => {
  const { name , categorieId , image , priceD , priceG , priceSG , minQntG , minQntSG } = req.body;
@@ -45,8 +46,13 @@ export const deleteProduct = async(req: Request , res: Response ): Promise<Respo
      }
  }
 
- export const updateProduct = async(req: Request , res: Response ): Promise<Response> => {
+ export const updateProduct = async(req: Request , res: Response): Promise<Response> => {
     const {id, name , categorieId , priceD , priceG , priceSG , minQntG , minQntSG } = req.body;
+
+    if( !id || !name || !categorieId || !priceD || !priceG || !priceSG || !minQntG || !minQntSG){
+      return res.status(400).json({message : 'please fill all fileds'});
+    }
+
   const product: Product = {
     id: id,
     name: name,
@@ -57,7 +63,7 @@ export const deleteProduct = async(req: Request , res: Response ): Promise<Respo
     priceSG: priceSG,
     minQntG: minQntG,
     minQntSG: minQntSG
-} 
+}  
      try {
          const result = await updateProductOnDB(product);
          if(result === null){
@@ -86,11 +92,12 @@ export const getProducts = async(req: Request , res: Response): Promise<Response
     
 export const searchForProducts = async(req: Request , res: Response): Promise<Response> => {
   const name: string = req.params.name;
+  const offset: string = req.params.offset;
   if(!name){
     return res.status(400).json({ message: 'Please fill in all fields' });
   }
      try {
-         const products = await searchForProductFromDB(name);
+         const products = await searchForProductFromDB(name , offset);
          if(products === null){
             throw error;
          }
@@ -100,5 +107,20 @@ export const searchForProducts = async(req: Request , res: Response): Promise<Re
      }
  }
 
+ export const searchForProductsNames  = async(req: Request , res: Response): Promise<Response> => {
+  const name: string = req.params.name;
+  if(!name){
+    return res.status(400).json({ message: 'Please fill in all fields' });
+  }
+     try {
+         const products = await searchForProductNamesFromDB(name);
+         if(products === null){
+            throw error;
+         }
+         return res.status(200).json({products : products});
+     } catch (error) {
+       return res.status(500).json({ message: 'Database error', error: error });      
+     }
+ }
 
    

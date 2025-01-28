@@ -1,4 +1,4 @@
-import { addUser, deleteUser, getUsers, searchForUsers, updateUserData } from '../../../Contoller/users_controller';
+import { addUser, deleteUser, getUsers, getUsersWithoutOffset, searchForUsers, updateUserData } from '../../../Contoller/users_controller';
 import {Router, Request , Response } from 'express';
 
 const router = Router();
@@ -18,6 +18,7 @@ router.post('/worker' , (req : Request , res : Response) => { addUser(req , res 
 router.delete('/worker' , (req: Request , res : Response) => { deleteUser(req , res , 'workers') });
 router.put('/worker' , (req: Request , res : Response) => { updateUserData(req , res , 'workers') });
 router.get('/worker/:offSet' , (req: Request , res : Response ) => { getUsers(req , res , 'workers') });
+router.get('/worker' , (req: Request , res : Response ) => { getUsersWithoutOffset(req , res , 'workers') });
 router.get('/worker/search/:username' , (req: Request , res : Response ) => { searchForUsers(req , res , 'Workers') });
 
 //////////////////////////// USERS /////////////////////////////////////

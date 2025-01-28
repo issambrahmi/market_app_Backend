@@ -1,15 +1,19 @@
 import { Request , Response } from 'express';
-import { addCategorieToDB, deleteCategorieFromDB, getCategoriesFromDB, searchForCategorieFromDB, updateCategorieOnDB } from '../Model/categorie_model';
+import { addCategorieToDB, deleteCategorieFromDB, getCategoriesFromDB, searchForCategorieFromDB, updateCategorieOnDB, VerifyCategorieExcisting } from '../Model/categorie_model';
 import { error } from 'console';
 
 export const addCategorie = async(req: Request , res: Response): Promise<Response> => {
  const {name} = req.body;
     try {
+        const isExcist : boolean = await VerifyCategorieExcisting(name);
+        if(isExcist){
+          return res.status(400).json({message : 'alredy excist'});
+        }
         const categorie = await addCategorieToDB(name);
         if(categorie === null){
            throw error;
         }
-        return res.status(200).json({message  : 'categorie added'});
+        return res.status(200).json({message  : 'categorie added' , categorie : categorie});
     } catch (error) {
       return res.status(500).json({ message: 'Database error', error: error });      
     }
@@ -47,7 +51,7 @@ export const getCategories = async(req: Request , res: Response): Promise<Respon
            if(categorie === null){
               throw error;
            }
-           return res.status(200).json({categorie : categorie});
+           return res.status(200).json({categories : categorie});
        } catch (error) {
          return res.status(500).json({ message: 'Database error', error: error });      
        }
@@ -69,4 +73,6 @@ export const searchForCategorie = async(req: Request , res: Response): Promise<R
          return res.status(500).json({ message: 'Database error', error: error });      
        }
    }
+
+ 
    

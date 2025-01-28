@@ -39,41 +39,12 @@ export const addProductToDB  = async (product : Product): Promise<Product | null
   }
   
   export const updateProductOnDB = async (product : Product): Promise<Product | null> => {
-    const data: (string | number) [] = []; 
-
     try {
-       var query = `UPDATE products SET`;
-
-       if(product.name){
-         data.push(product.name);
-         query += `name = ?, `;
-       }
-       if(product.priceD){
-        data.push(product.priceD);
-        query += `price_d = ?, `;
-       }
-       if(product.priceG){
-        data.push(product.priceG);
-        query += `price_sg = ?, `;
-       }
-       if(product.priceSG){
-        data.push(product.priceSG);
-        query += `price_sg = ?, `;
-       }
-       if(product.minQntG){
-        data.push(product.minQntG);
-        query += `min_qnt_g = ?, `;
-       }
-       if(product.minQntSG){
-        data.push(product.minQntSG);
-        query += `min_qnt_sg = ?, `;
-       }
-
-       query = query.slice(0 , -2);
-       query += `WHERE id = ?`;
-       data.push(product.id);
-       
-      const [rows]: any = await db.execute(query , data);
+      const query = `UPDATE products SET name=? , categorie_id=? , price_d=? , price_g=? , price_sg=? , min_qnt_g=? , min_qnt_sg=?
+      WHERE id=?`;
+      
+      const [rows]: any = await db.execute(query , [product.name , product.categorieId , product.priceD ,
+         product.priceG , product.priceSG , product.minQntG , product.minQntSG , product.id]);
       return rows as Product ;
   
     } catch (error) {
@@ -86,7 +57,7 @@ export const addProductToDB  = async (product : Product): Promise<Product | null
 
     const query = `SELECT products.* , categories.name AS categorie_name 
     FROM products 
-    JOIN categories ON products.categorie_id = categories.id
+    LEFT JOIN categories ON products.categorie_id = categories.id
     LIMIT 16
     OFFSET ?`;
     
@@ -100,16 +71,35 @@ export const addProductToDB  = async (product : Product): Promise<Product | null
       }
     }
 
-    export const searchForProductFromDB  = async (name : string ): Promise<[Product] | null> => {
+    export const searchForProductFromDB  = async (name : string , offSet : string ): Promise<[Product] | null> => {
      
       const query = `SELECT products.* , categories.name AS categorie_name 
          FROM products 
          JOIN categories ON products.categorie_id = categories.id
          WHERE products.name LIKE ? 
+         LIMIT 16
+         OFFSET ?`;
+
+      try {
+        const [rows]: any = await db.execute(query , [`%${name}%` , offSet]);
+        return rows;
+  
+      } catch (error) {
+        console.log('err getproduct' + error);
+        return null;
+      }
+    }
+
+    export const searchForProductNamesFromDB  = async (name : string ): Promise<[Product] | null> => {
+     
+      const query = `SELECT name  
+         FROM products
+         WHERE products.name LIKE ? 
          LIMIT 16`;
 
       try {
         const [rows]: any = await db.execute(query , [`%${name}%`]);
+
         return rows;
   
       } catch (error) {

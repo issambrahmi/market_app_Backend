@@ -64,3 +64,19 @@ export const getCategoriesFromDB  = async (): Promise<[Categorie] | null> => {
       return null;
     }
   }
+
+export const VerifyCategorieExcisting = async(name : string) : Promise<boolean> => {
+   try {
+     const query = `SELECT * FROM categories WHERE name = ?`;
+     const [row] : any[] = await db.execute(query , [name]);
+     console.log(row.length);
+     if(row.length != 0){
+      return true;
+     }
+     return false;
+   } catch (error) {
+      console.log('err verify categorie');
+      console.log(error);
+      return true;
+   }
+  }

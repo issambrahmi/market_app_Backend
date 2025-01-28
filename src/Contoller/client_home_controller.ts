@@ -6,7 +6,7 @@ import { getProductsFromDB } from '../Model/product_model';
 export const clientHome = async(req: Request , res: Response): Promise<Response> => {
  
     try {
-        const categories = await getCategoriesFromDB('0');
+        const categories = await getCategoriesFromDB();
         const products = await getProductsFromDB('0');
 
         return res.status(200).json({categories : categories , products : products});
