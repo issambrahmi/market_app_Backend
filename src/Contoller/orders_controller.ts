@@ -97,6 +97,7 @@ export const addOrder = async(req: Request , res: Response): Promise<Response> =
            if(result === null){
               throw error;
            }
+           console.log(result);
            return res.status(200).json({message  : 'success' , orders : result});
        } catch (error) {
          return res.status(500).json({ message: 'Database error', error: error });      

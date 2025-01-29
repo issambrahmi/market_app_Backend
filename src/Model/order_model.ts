@@ -95,8 +95,11 @@ export const updateOrderOnDB = async ( items : [OrderItems]): Promise<boolean> =
 
 export const getOrdersFromDB = async (): Promise<[Order] | null> =>{
 
-   const query = `SELECT * FROM orders`;  
-   
+   const query = `SELECT orders.* , clients.username AS client_name , workers.username AS worker_name
+                  FROM orders INNER JOIN clients
+                  ON orders.client_id = clients.id
+                  LEFT JOIN workers
+                  ON orders.worker_id = workers.id`;  
    try {
     const [rows]: any =  await db.execute(query);
      return rows;
