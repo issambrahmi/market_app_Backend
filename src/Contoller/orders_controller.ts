@@ -1,7 +1,7 @@
 import { Request , Response } from 'express';
 import { error } from 'console';
-import { acceptOrderOnDB, addOrderToDB, deleteOrderFromDB, getOrderItemsFomDB, getOrdersFromDB, Order, OrderItems, searchOrderByIdOnDB, updateOrderOnDB } from '../Model/order_model';
-import { workerData } from 'worker_threads';
+import { acceptOrderOnDB, addOrderToDB, deleteOrderFromDB, getOrderItemsFomDB, getOrdersFromDB, loadMoreOrdersFromDB, Order, OrderItems, searchOrderByIdOnDB, updateOrderOnDB } from '../Model/order_model';
+
 
 export const addOrder = async(req: Request , res: Response): Promise<Response> => {
 
@@ -103,10 +103,36 @@ export const addOrder = async(req: Request , res: Response): Promise<Response> =
          return res.status(500).json({ message: 'Database error', error: error });      
        }
    }
+
+   
+   export const loadMoreOrders = async(req: Request , res: Response): Promise<Response> => {
+       
+    const isAccepted = req.params.isAccepted;
+    const offSet  = req.params.offset;
+
+    if(isAccepted || !offSet){
+      return res.status(400).json({ message: 'Please fill in all fields' });
+    }
+
+    try {
+        const result = await loadMoreOrdersFromDB(isAccepted , offSet);
+        if(result === null){
+           throw error;
+        }
+        console.log(result);
+        return res.status(200).json({message  : 'success' , orders : result});
+    } catch (error) {
+      return res.status(500).json({ message: 'Database error', error: error });      
+    }
+}
    
    export const getOrderItems = async(req: Request , res: Response): Promise<Response> => {
 
-    const  orderId : string= req.params.orderId;
+    const  orderId = req.params.orderId;
+
+    if(!orderId){
+      return res.status(400).json({ message: 'Please fill in all fields' });
+    }
 
        try {
            const result = await getOrderItemsFomDB(orderId);
@@ -121,7 +147,13 @@ export const addOrder = async(req: Request , res: Response): Promise<Response> =
 
    export const searchForOrders = async(req: Request , res: Response): Promise<Response> => {
 
-    const id : number = req.body;
+    
+    const id  = req.params.id;
+
+    if(!id ){
+      return res.status(400).json({ message: 'Please fill in all fields xfg' });
+    }
+
        try {
            const result = await searchOrderByIdOnDB(id);
            if(result === null){

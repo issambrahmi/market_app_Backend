@@ -95,11 +95,22 @@ export const updateOrderOnDB = async ( items : [OrderItems]): Promise<boolean> =
 
 export const getOrdersFromDB = async (): Promise<[Order] | null> =>{
 
-   const query = `SELECT orders.* , clients.username AS client_name , workers.username AS worker_name
+   const query = `(SELECT orders.* , clients.username AS client_name , workers.username AS worker_name
                   FROM orders INNER JOIN clients
                   ON orders.client_id = clients.id
                   LEFT JOIN workers
-                  ON orders.worker_id = workers.id`;  
+                  ON orders.worker_id = workers.id
+                  WHERE is_accepted=1
+                  LIMIT 30)
+                  UNION
+                  (SELECT orders.* , clients.username AS client_name , workers.username AS worker_name
+                  FROM orders INNER JOIN clients
+                  ON orders.client_id = clients.id
+                  LEFT JOIN workers
+                  ON orders.worker_id = workers.id
+                  WHERE is_accepted=0
+                  LIMIT 30)
+                  `;  
    try {
     const [rows]: any =  await db.execute(query);
      return rows;
@@ -107,6 +118,25 @@ export const getOrdersFromDB = async (): Promise<[Order] | null> =>{
        console.log('err getting Orders ' + error);
        return null;
    }
+}
+
+export const loadMoreOrdersFromDB = async (isAccepted: any , offSet: any): Promise<[Order] | null> =>{
+
+  const query = `SELECT orders.* , clients.username AS client_name , workers.username AS worker_name
+                 FROM orders INNER JOIN clients
+                 ON orders.client_id = clients.id
+                 LEFT JOIN workers
+                 ON orders.worker_id = workers.id
+                 WHERE is_accepted=?
+                 LIMIT 30 OFFSET ?
+                 `;  
+  try {
+   const [rows]: any =  await db.execute(query , [isAccepted , offSet]);
+    return rows;
+  } catch (error) {
+      console.log('err getting Orders ' + error);
+      return null;
+  }
 }
 
 export const getOrderItemsFomDB = async (orderId : string): Promise<[OrderItems] | null> =>{
@@ -126,9 +156,15 @@ export const getOrderItemsFomDB = async (orderId : string): Promise<[OrderItems]
    }
 }
 
-export const searchOrderByIdOnDB = async (orderId : number): Promise<Order | null> =>{
+export const searchOrderByIdOnDB = async (orderId: string): Promise<Order | null> =>{
 
-    const query = `SELECT * FROM orders WHERE id = ?`;
+    const query = `SELECT orders.*,clients.username AS client_name, workers.username AS worker_name
+                  FROM orders
+                  INNER JOIN clients
+                  ON orders.client_id = clients.id
+                  LEFT JOIN workers
+                  ON orders.worker_id = workers.id
+                  WHERE orders.id = ?`;
    try {
 
     const [rows]: any =  await db.execute(query , [orderId]);
