@@ -1,6 +1,6 @@
 import { Request , Response } from 'express';
 import { error } from 'console';
-import { addProductToDB, deleteProductFromDB, getProductsFromDB, Product, searchForProductFromDB, searchForProductNamesFromDB, updateProductOnDB } from '../Model/product_model';
+import { addProductToDB, addProductToFavoritesOnDB, deleteProductFromDB, deleteProductToFavoritesOnDB, getProductsFromDB, Product, searchForProductFromDB, searchForProductNamesFromDB, updateProductOnDB } from '../Model/product_model';
 import { off } from 'process';
 
 export const addProduct = async(req: Request , res: Response): Promise<Response> => {
@@ -76,10 +76,14 @@ export const deleteProduct = async(req: Request , res: Response ): Promise<Respo
  }
 
 
-export const getProducts = async(req: Request , res: Response): Promise<Response> => {
-    const offset: string = req.params.offSet;
+export const getProducts = async(req: Request , res: Response, client : boolean): Promise<Response> => {
+    const offset: string = req.params.offset;
+
+    if( !offset){
+      return res.status(400).json({message : 'please fill all fileds'});
+    }
        try {
-           const products = await getProductsFromDB(offset);
+           const products = await getProductsFromDB(offset , client == true ? 30 : 16);
            if(products === null){
               throw error;
            }
@@ -123,4 +127,47 @@ export const searchForProducts = async(req: Request , res: Response): Promise<Re
      }
  }
 
-   
+ 
+ export const addProductToFavorite  = async(req: Request , res: Response): Promise<Response> => {
+  
+  const { productId , clientId } = req.body;
+  console.log(productId);
+  console.log(clientId);
+
+
+  if(!productId || !clientId){
+    return res.status(400).json({ message: 'Please fill in all fields' });
+  }
+     try {
+         const product = await addProductToFavoritesOnDB(productId , clientId);
+         console.log(1);
+         if(product === null){
+            throw error;
+         }
+         return res.status(200).json({products : product});
+     } catch (error) {
+       return res.status(500).json({ message: 'Database error', error: error });      
+     }
+ }
+
+
+
+ export const deleteProductToFavorite  = async(req: Request , res: Response): Promise<Response> => {
+  
+  const { productId , clientId } = req.body;
+
+  if(!productId || !clientId){
+    return res.status(400).json({ message: 'Please fill in all fields' });
+  }
+     try {
+         const product = await deleteProductToFavoritesOnDB(productId , clientId);
+         if(product === null){
+            throw error;
+         }
+         return res.status(200).json({products : product});
+     } catch (error) {
+       return res.status(500).json({ message: 'Database error', error: error });      
+     }
+ }
+
+

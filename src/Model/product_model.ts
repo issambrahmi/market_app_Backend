@@ -53,13 +53,13 @@ export const addProductToDB  = async (product : Product): Promise<Product | null
     }
   }
   
-  export const getProductsFromDB  = async (offSet : string): Promise<[Product] | null> => {
+  export const getProductsFromDB  = async (offSet : string , limit : number): Promise<[Product] | null> => {
 
     const query = `SELECT products.* , categories.name AS categorie_name 
-    FROM products 
-    LEFT JOIN categories ON products.categorie_id = categories.id
-    LIMIT 16
-    OFFSET ?`;
+                   FROM products 
+                   LEFT JOIN categories ON products.categorie_id = categories.id
+                   LIMIT ${limit}
+                   OFFSET ?`;
     
       try {
         const [rows]: any = await db.execute(query , [offSet]);
@@ -107,3 +107,37 @@ export const addProductToDB  = async (product : Product): Promise<Product | null
         return null;
       }
     }
+
+
+    export const addProductToFavoritesOnDB  = async (productId : string , clientId : string ): Promise<[Product] | null> => {
+     
+      const query = `INSERT INTO favorites   
+        (client_id , product_id) 
+        VALUES ( ? , ? )`;
+         
+      try {
+        const [rows]: any = await db.execute(query , [clientId , productId]);
+        return rows;
+  
+      } catch (error) {
+        console.log('err getproduct' + error);
+        return null;
+      }
+    }
+
+    export const deleteProductToFavoritesOnDB  = async (productId : string , clientId : string ): Promise<[Product] | null> => {
+     
+      const query = `DELETE FROM favorites   
+       WHERE client_id = ? 
+       AND product_id = ?`;
+         
+      try {
+        const [rows]: any = await db.execute(query , [clientId , productId]);
+        return rows;
+  
+      } catch (error) {
+        console.log('err getproduct' + error);
+        return null;
+      }
+    }
+

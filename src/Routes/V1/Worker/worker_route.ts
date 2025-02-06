@@ -7,3 +7,5 @@ const router = Router();
 
 router.get('/login' , (req : Request , res: Response) => { login(req , res , 'worker') });
 router.use('/order' , order_route );
+
+export default router;
