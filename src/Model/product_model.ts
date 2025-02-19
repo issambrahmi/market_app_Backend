@@ -55,16 +55,17 @@ export const addProductToDB  = async (product : Product): Promise<Product | null
   
   export const getProductsFromDB  = async (offSet : string , limit : number): Promise<[Product] | null> => {
 
-    const query = `SELECT products.* , categories.name AS categorie_name 
-                   FROM products 
-                   LEFT JOIN categories ON products.categorie_id = categories.id
+    const query = `SELECT p.* , categories.name AS categorie_name ,
+                   CASE WHEN f.product_id IS NOT NULL THEN true ELSE false END AS is_favorite
+                   FROM products p
+                   LEFT JOIN favorites f ON f.product_id = p.id
+                   LEFT JOIN categories ON p.categorie_id = categories.id
                    LIMIT ${limit}
                    OFFSET ?`;
     
       try {
         const [rows]: any = await db.execute(query , [offSet]);
         return rows;
-  
       } catch (error) {
         console.log('err getproduct' + error);
         return null;
