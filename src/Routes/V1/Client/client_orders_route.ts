@@ -5,7 +5,7 @@ const router = Router();
 
 //////////////////////////// ORDERS ///////////////////////////////////
 
-router.post('/order' , (req : Request , res : Response) => { addOrder(req , res ) });
+router.post('/' , (req : Request , res : Response) => { addOrder(req , res ) });
 router.delete('/order' , (req : Request , res : Response) => { deleteOrder(req , res ) });
 //router.put('/orderStatus' , (req : Request , res : Response) => { updateOrderStatus(req , res ) });
 router.put('/orderItems' , (req : Request , res : Response) => { updateOrderItems(req , res ) });

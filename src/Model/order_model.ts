@@ -2,13 +2,13 @@ import {db} from '../db config/db';
 
 
 export interface Order {
-  id: number , 
+  //id: number , 
   clientId : number , 
-  wordkerId : number , 
-  date : string ,
+  //wordkerId : number , 
+  //date : string ,
   totalePrice : number ,
-  status : 'waiting' | 'preparing' | 'finished' ,
-  isAccepted : boolean
+  //status : 'waiting' | 'preparing' | 'finished' ,
+  //isAccepted : boolean
 }
 
 export interface OrderItems {
@@ -19,7 +19,9 @@ export interface OrderItems {
   qnt : number ,
 }
 
-export const addOrderToDB = async (Order : Order , items : OrderItems[]): Promise<Order | null> =>{
+//export type Order = Record<string,number>;
+
+export const addOrderToDB = async (Order : Order, items : OrderItems[]): Promise<Order | null> =>{
 
      const query1 = `INSERT INTO orders (client_id , total_price ) VALUES (?,?)`;
      const query2 = `INSERT INTO order_items (order_id , product_id , qnt , type ) VALUES (?,?,?,?)`;

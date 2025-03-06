@@ -12,10 +12,10 @@ app.use(express.json());
 app.use(cors());
 
 
-app.use('/V1/market/admin' , admin_router);
+
+app.use('/V1/market/admin' , admin_router );
 app.use('/V1/market/client' ,client_route );
 app.use('/V1/market/worker' , worker_route);
-
 
 
 //app.use('/V2/market/admin' , admin_router);

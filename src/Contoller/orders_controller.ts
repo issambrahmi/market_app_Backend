@@ -6,26 +6,24 @@ import { acceptOrderOnDB, addOrderToDB, deleteOrderFromDB, getOrderItemsFomDB, g
 export const addOrder = async(req: Request , res: Response): Promise<Response> => {
 
     const {orderData , items } = req.body;
+
+   if(!orderData.client_id || !orderData.total_price || !items){
+     return res.status(400).json({message : 'please enter all fields'});
+   }
+
     const order : Order = {
-        id: 0,
         clientId: orderData.client_id,
-        wordkerId : 0,
-        date: '',
         totalePrice: orderData.total_price,
-        status: 'waiting',
-        isAccepted : false
      };
 
      const itemsList: [OrderItems] =  items.map((item: any) =>({ 
-        id : item.id ,
-        orderID : item.order_id ,
         productId : item.product_id ,
         type : item.type,
         qnt : item.qnt
     }));
 
        try {
-           const result = await addOrderToDB( order , itemsList);
+           const result = await addOrderToDB( order, itemsList);
            if(result === null){
               throw error;
            }

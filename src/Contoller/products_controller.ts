@@ -1,6 +1,6 @@
 import { Request , Response } from 'express';
 import { error } from 'console';
-import { addProductToDB, addProductToFavoritesOnDB, deleteProductFromDB, deleteProductToFavoritesOnDB, getProductsFromDB, Product, searchForProductFromDB, searchForProductNamesFromDB, updateProductOnDB } from '../Model/product_model';
+import { addProductToDB, addProductToFavoritesOnDB, deleteProductFromDB, deleteProductToFavoritesOnDB, getCategorieProductsFromDB, getProductsFromDB, Product, searchForProductFromDB, searchForProductNamesFromDB, updateProductOnDB } from '../Model/product_model';
 import { off } from 'process';
 
 export const addProduct = async(req: Request , res: Response): Promise<Response> => {
@@ -84,6 +84,24 @@ export const getProducts = async(req: Request , res: Response, client : boolean)
     }
        try {
            const products = await getProductsFromDB(offset , client == true ? 30 : 16);
+           if(products === null){
+              throw error;
+           }
+           return res.status(200).json({products : products});
+       } catch (error) {
+         return res.status(500).json({ message: 'Database error', error: error });      
+       }
+   }
+
+   export const getCategorieProducts = async(req: Request , res: Response): Promise<Response> => {
+    const offset: string = req.params.offset;
+    const categorieId : string = req.params.categorieId
+
+    if( !offset || !categorieId){
+      return res.status(400).json({message : 'please fill all fileds'});
+    }
+       try {
+           const products = await getCategorieProductsFromDB(offset, categorieId);
            if(products === null){
               throw error;
            }
