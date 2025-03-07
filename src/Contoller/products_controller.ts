@@ -157,7 +157,6 @@ export const searchForProducts = async(req: Request , res: Response): Promise<Re
   }
      try {
          const product = await addProductToFavoritesOnDB(productId , clientId);
-         console.log(1);
          if(product === null){
             throw error;
          }

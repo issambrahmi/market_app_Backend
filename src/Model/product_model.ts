@@ -95,8 +95,10 @@ export const addProductToDB  = async (product : Product): Promise<Product | null
 
     export const searchForProductFromDB  = async (name : string , offSet : string ): Promise<[Product] | null> => {
      
-      const query = `SELECT p.* , c.name AS categorie_name 
+      const query = `SELECT p.* , c.name AS categorie_name ,
+         CASE WHEN f.product_id IS NOT NULL THEN true ELSE false END AS is_favorite
          FROM products p
+         LEFT JOIN favorites f ON f.product_id = p.id
          LEFT JOIN categories c ON p.categorie_id = c.id
          WHERE p.name LIKE ? 
          LIMIT 30
