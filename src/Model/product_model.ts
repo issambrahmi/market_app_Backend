@@ -1,3 +1,4 @@
+import { FieldPacket } from "mysql2";
 import { db } from "../db config/db";
 
 export interface Product {
@@ -94,11 +95,11 @@ export const addProductToDB  = async (product : Product): Promise<Product | null
 
     export const searchForProductFromDB  = async (name : string , offSet : string ): Promise<[Product] | null> => {
      
-      const query = `SELECT products.* , categories.name AS categorie_name 
-         FROM products 
-         JOIN categories ON products.categorie_id = categories.id
-         WHERE products.name LIKE ? 
-         LIMIT 16
+      const query = `SELECT p.* , c.name AS categorie_name 
+         FROM products p
+         LEFT JOIN categories c ON p.categorie_id = c.id
+         WHERE p.name LIKE ? 
+         LIMIT 30
          OFFSET ?`;
 
       try {
@@ -111,20 +112,26 @@ export const addProductToDB  = async (product : Product): Promise<Product | null
       }
     }
 
-    export const searchForProductNamesFromDB  = async (name : string ): Promise<[Product] | null> => {
+    export interface ProductSearchResult {
+      id: number;
+      name: string;
+    }
+    export const searchForProductNamesFromDB  = async (name : string , offset :string ): Promise<ProductSearchResult[] | null> => {
      
-      const query = `SELECT name  
+      const query = `SELECT id , name  
          FROM products
          WHERE products.name LIKE ? 
-         LIMIT 16`;
+         LIMIT 30
+         OFFSET ?
+         `;
 
       try {
-        const [rows]: any = await db.execute(query , [`%${name}%`]);
+        const [rows] : [any, FieldPacket[]] = await db.execute(query , [`%${name}%` , offset]);
 
-        return rows;
+        return rows as ProductSearchResult[];
   
       } catch (error) {
-        console.log('err getproduct' + error);
+        console.log('err search products names' + error);
         return null;
       }
     }

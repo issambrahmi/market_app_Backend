@@ -1,7 +1,6 @@
 import { Request , Response } from 'express';
 import { error } from 'console';
 import { addProductToDB, addProductToFavoritesOnDB, deleteProductFromDB, deleteProductToFavoritesOnDB, getCategorieProductsFromDB, getProductsFromDB, Product, searchForProductFromDB, searchForProductNamesFromDB, updateProductOnDB } from '../Model/product_model';
-import { off } from 'process';
 
 export const addProduct = async(req: Request , res: Response): Promise<Response> => {
  const { name , categorieId , image , priceD , priceG , priceSG , minQntG , minQntSG } = req.body;
@@ -46,7 +45,7 @@ export const deleteProduct = async(req: Request , res: Response ): Promise<Respo
      }
  }
 
- export const updateProduct = async(req: Request , res: Response): Promise<Response> => {
+export const updateProduct = async(req: Request , res: Response): Promise<Response> => {
     const {id, name , categorieId , priceD , priceG , priceSG , minQntG , minQntSG } = req.body;
 
     if( !id || !name || !categorieId || !priceD || !priceG || !priceSG || !minQntG || !minQntSG){
@@ -75,7 +74,6 @@ export const deleteProduct = async(req: Request , res: Response ): Promise<Respo
      }
  }
 
-
 export const getProducts = async(req: Request , res: Response, client : boolean): Promise<Response> => {
     const offset: string = req.params.offset;
 
@@ -93,7 +91,7 @@ export const getProducts = async(req: Request , res: Response, client : boolean)
        }
    }
 
-   export const getCategorieProducts = async(req: Request , res: Response): Promise<Response> => {
+export const getCategorieProducts = async(req: Request , res: Response): Promise<Response> => {
     const offset: string = req.params.offset;
     const categorieId : string = req.params.categorieId
 
@@ -110,8 +108,7 @@ export const getProducts = async(req: Request , res: Response, client : boolean)
          return res.status(500).json({ message: 'Database error', error: error });      
        }
    }
-
-    
+  
 export const searchForProducts = async(req: Request , res: Response): Promise<Response> => {
   const name: string = req.params.name;
   const offset: string = req.params.offset;
@@ -131,15 +128,17 @@ export const searchForProducts = async(req: Request , res: Response): Promise<Re
 
  export const searchForProductsNames  = async(req: Request , res: Response): Promise<Response> => {
   const name: string = req.params.name;
+  const offSet: string = req.params.offset;
+
   if(!name){
     return res.status(400).json({ message: 'Please fill in all fields' });
   }
      try {
-         const products = await searchForProductNamesFromDB(name);
+      const products = await searchForProductNamesFromDB(name , offSet);
          if(products === null){
             throw error;
          }
-         return res.status(200).json({products : products});
+         return res.status(200).json({productsNames : products});
      } catch (error) {
        return res.status(500).json({ message: 'Database error', error: error });      
      }
@@ -167,8 +166,6 @@ export const searchForProducts = async(req: Request , res: Response): Promise<Re
        return res.status(500).json({ message: 'Database error', error: error });      
      }
  }
-
-
 
  export const deleteProductToFavorite  = async(req: Request , res: Response): Promise<Response> => {
   
